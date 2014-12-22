@@ -2,12 +2,11 @@
 
 /*
  * captura-samples-offline.php
- *  
- * Origen:
- * Comandos de recuperacion de muestras almacenadas en DustMate
- * ---------------------------------------------------
  */
-$comandos = array(
+$comandos['captura-samples-offline'] = [
+	'descripcion'    => 'Recuperacion de muestras almacenadas en DustMate',
+	'implementacion' => array(
+	
 	"!D19427010814.",
 	"!D19427010814.",
 	"!D1942303300D.",
@@ -19,6 +18,6 @@ $comandos = array(
 	"!D19421031009.",
 	"!D19421031009.",
 	"!D1942103400C."
-);
+)];
 
 ?>

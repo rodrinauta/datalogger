@@ -2,13 +2,12 @@
 
 /*
  * borrar-datos.php
- *  
- * Origen:
- * Comando de eliminacion de datos en DustMate.
- * ---------------------------------------------------
  */
-$comandos = array(
+$comandos['borrar-datos'] = [
+	'descripcion'    => 'Eliminacion de muestras almacenadas en DustMate',
+	'implementacion' => array(
+
 	"!D1942549.",
-);
+)];
 
 ?>

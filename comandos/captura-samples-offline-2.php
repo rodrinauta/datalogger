@@ -1,14 +1,12 @@
 <?php
 
 /*
- * captura-samples-offline-2.php
- *  
- * Origen:
- * Comandos de recuperacion de aun mas muestras 
- * almacenadas en DustMate
- * ---------------------------------------------------
+ * captura-samples-offline-2.php  
  */
-$comandos = array(
+$comandos['captura-samples-offline-2'] = [
+	'descripcion'    => '[test] Recuperacion de una muestra larga almacenada en DustMate',
+	'implementacion' => array(
+	
 "!D19427010915.",
 "!D19427010915.",
 "!D19423076418.",
@@ -126,6 +124,6 @@ $comandos = array(
 "!D1942104C01C.",
 "!D1942104D01D.",
 "!D1942104E01E.",
-);
+)];
 
 ?>

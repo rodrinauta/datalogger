@@ -2,12 +2,11 @@
 
 /*
  * obtener-datos-3.php
- *  
- * Origen:
- * Extraccion de una medicion desde la memoria del DustMate.
- * -----------------------------------------------------------
  */
-$comandos = array(
+$comandos['obtener-datos-3'] = [
+	'descripcion'    => 'Extraccion de una medicion desde la memoria del DustMate',
+	'implementacion' => array(
+	
 	"!D19427010814.",
 	"!D19427010814.",
 	"!D1942303300D.",
@@ -19,6 +18,6 @@ $comandos = array(
 	"!D19421031009.",
 	"!D19421031009.",
 	"!D1942103400C.",
-);
+)];
 
 ?>

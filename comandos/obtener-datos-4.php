@@ -2,12 +2,10 @@
 
 /*
  * obtener-datos-4.php
- *  
- * Origen:
- * Extraccion de dos mediciones desde la memoria del DustMate.
- * -----------------------------------------------------------
  */
-$comandos = array(
+$comandos['obtener-datos-4'] = [
+	'descripcion'    => '[test] Extraccion de primera y segunda mediciones desde la memoria del DustMate',
+	'implementacion' => array(
 /* Recolectar primera medicion
 
 	"!D19427010814.",
@@ -48,6 +46,6 @@ $comandos = array(
 	"!D19421031009.",
 	"!D19421031009.",
 	"!D1942103400C.",
-);
+)];
 
 ?>

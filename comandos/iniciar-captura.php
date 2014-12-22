@@ -2,13 +2,12 @@
 
 /*
  * iniciar-captura.php
- *  
- * Origen:
- * Comando de inicio de captura.
- * ---------------------------------------------------
  */
-$comandos = array(
+$comandos['iniciar-captura'] = [
+	'descripcion'    => 'Ordenar inicio de captura a DustMate',
+	'implementacion' => array(
+	
 	"!D1942448.",
-);
+)];
 
 ?>

@@ -2,13 +2,12 @@
 
 /*
  * detener-captura.php
- *  
- * Origen:
- * Comando de detencion de captura en curso.
- * ---------------------------------------------------
  */
-$comandos = array(
+$comandos['detener-captura'] = [
+	'descripcion'    => 'Detener captura en curso',
+	'implementacion' => array(
+
 	"!D194264A.",
-);
+)];
 
 ?>

@@ -1,14 +1,17 @@
 <?php
 
 /*
- * handshake.php
+ * handshake-refill-on.php
  *  
  * Origen:
  * Comandos de handshake con Refill ON
  * [3 capturas reload on, 4 capturas reload off.txt]
  * ---------------------------------------------------
  */
-$comandos = array(
+$comandos['handshake-refill-on'] = [
+	'descripcion'    => 'Comandos de handshake (con refill ON)',
+	'implementacion' => array(
+	
 	"!D1942F5A.",     /* Log 3151 */
 	"!D1942a000035.", /* Log 3176 */
 	"!D1942a004039.", /* Log 3207 */
@@ -37,6 +40,6 @@ $comandos = array(
 	"!D1942101A017.", /* Log 3904 */
 	"!D19421018816.", /* Log 3937 */
 	"!D1942F5A.", 	  /* Log 3965 */
-);
+	)];
 
 ?>
