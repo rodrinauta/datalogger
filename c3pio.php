@@ -56,8 +56,8 @@ stream_set_timeout($comport->_dHandle, 10);   // Nada en 10 segundos? :(
 
 
 // Introspeccion: ¿Que comandos conozco?
-echo "Introspeccion: comandos implementados  \n";
-echo "----------------------------------------\n";
+echo "--- Introspeccion: comandos implementados  ---\n";
+echo "----------------------------------------------\n";
 foreach (array_keys($comandos) as $nombre_cmd)
 {
 	echo "[$nombre_cmd]: ". $comandos[$nombre_cmd]['descripcion']."\n";
@@ -66,15 +66,16 @@ foreach (array_keys($comandos) as $nombre_cmd)
 	//foreach ($comandos[$nombre_cmd]['implementacion'] as $line)
 	//	echo $line."\n";
 }
+echo "--- Fin introspreccion --- \n\n";
 
 // Lanzar al DustMate los comandos uno por uno.
 // Pausa de 0.25 segundos a la espera de respuesta
 // para cada comando.
 //while (1) {
-//foreach ($comandos as $cmd)
-//{
-//	poke($comport, $cmd, 0.25);
-//}
+foreach ($comandos['captura-en-vivo']['implementacion'] as $cmd)
+{
+	poke($comport, $cmd, 0.25);
+}
 //}
 ?>
 
