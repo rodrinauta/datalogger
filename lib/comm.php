@@ -29,4 +29,33 @@ function poke($comport, $msg, $waitForReply = 0.1)
         recv($comport);
 }
 
+
+function askDustMate($comport, $waitForReply = 0.25)
+{
+/*
+	// Raspberry Pi
+	send($comport, "!D19420017814.", $waitForReply);
+	$comport->serialFlush();
+	$dustInfo = $comport->readPort(0);
+*/
+
+	// Simulator
+	$dustInfo = ":D194210005077603DC059901A8000000000000000006EC039805B401930000000000000163A8";
+
+	// Got frame now. Is it evil?
+	if ($dustInfo{6} != '1') 
+	{
+		return "INVALID";
+	}
+	$dustMate['tsp_lat']  = readSubString ($dustInfo, 12, 3, 0.1);
+	$dustMate['pm10_lat'] = readSubString ($dustInfo, 16, 3, 0.1);
+	$dustMate['pm25_lat'] = readSubString ($dustInfo, 20, 3, 0.01);
+	$dustMate['pm1_lat']  = readSubString ($dustInfo, 24, 3, 0.01);
+	$dustMate['tsp_avg']  = readSubString ($dustInfo, 44, 3, 0.1);
+	$dustMate['pm10_avg'] = readSubString ($dustInfo, 48, 3, 0.1);
+	$dustMate['pm25_avg'] = readSubString ($dustInfo, 52, 3, 0.01);
+	$dustMate['pm1_avg']  = readSubString ($dustInfo, 56, 3, 0.01);
+	return $dustMate;
+}
+
 ?>
