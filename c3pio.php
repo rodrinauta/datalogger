@@ -2,38 +2,35 @@
 
 /*
  * c3pio.php: Conversacion eye3pio <--> DustMate
- *            Los comandos de la conversacion se encuentran
- *            en un script externo. (ver include 'algo.php'
- *            aqui abajo)
+ *            Los comandos conocidos se encuentran en ./comandos
  */
 
-include 'PhpSerial.php';   // External dependency
-include 'decoder.php';     // DustMate frame decoder
-include 'comm.php';        // send() / recv() / poke()
+include 'lib/PhpSerial.php';      // External dependency
+include 'lib/decoder.php';        // DustMate frame decoder
+include 'lib/comm.php';           // send() / recv() / poke()
 
-require 'database.php';  // Database interface
-require 'nmea.php';      // NMEA GPS data parser
+require 'lib/database.php';       // Database interface
+require 'lib/nmea.php';           // NMEA GPS data parser
 
 
-include 'comandos/parametros.php';
+//include 'comandos/parametros.php';
 include 'comandos/captura-en-vivo.php';
-include 'comandos/obtener-datos-4.php'; // Probando
-include 'comandos/obtener-datos-3.php'; // Probando
-include 'comandos/fecha.php';                       // Establecer fecha del DustMate
-include 'comandos/iniciar-captura.php';
-include 'comandos/detener-captura.php';           // Descriptivo
-include 'comandos/captura-samples-offline-2.php'; // Supuestamente ocho mediciones en DustMate
-include 'comandos/captura-samples-offline.php';   // Dos mediciones en DustMate
-include 'comandos/handshake-refill-on.php';       // Handshake con refill ON
-include 'comandos/borrar-datos.php';
-
+//include 'comandos/obtener-datos-4.php';
+//include 'comandos/obtener-datos-3.php';
+//include 'comandos/fecha.php';
+//include 'comandos/iniciar-captura.php';
+//include 'comandos/detener-captura.php';
+//include 'comandos/captura-samples-offline-2.php';
+//include 'comandos/captura-samples-offline.php';
+//include 'comandos/handshake-refill-on.php';
+//include 'comandos/borrar-datos.php';
+//include 'comandos/introspection.php'; // Show known commands;
 
 // Configuracion inicial
 $comport = new PhpSerial;
 $comport->deviceSet("/dev/ttyUSB0");         // Hardcodeado por ahora
 $comport->confBaudRate(9600);
 $comport->deviceOpen('w+');
-
 //stream_set_timeout($comport->_dHandle, 10);   // Nada en 10 segundos? :(
 
 
@@ -49,6 +46,18 @@ foreach (array_keys($comandos) as $nombre_cmd)
 	//	echo $line."\n";
 }
 echo "--- Fin introspreccion --- \n\n";
+
+
+
+// Netcat stage: Listen for incoming connections
+
+
+
+
+
+
+
+
 
 // Lanzar al DustMate los comandos uno por uno.
 // Pausa de 0.25 segundos a la espera de respuesta
