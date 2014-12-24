@@ -1,14 +1,19 @@
 <?php
 
 /*
- * c3pio.php: Conversacion c3pio <--> DustMate
+ * c3pio.php: Conversacion eye3pio <--> DustMate
  *            Los comandos de la conversacion se encuentran
  *            en un script externo. (ver include 'algo.php'
  *            aqui abajo)
  */
 
-include 'PhpSerial.php';
-include 'decoder.php'; // DustMate frame decoder
+include 'PhpSerial.php';   // External dependency
+include 'decoder.php';     // DustMate frame decoder
+include 'comm.php';        // send() / recv() / poke()
+
+require 'database.php';  // Database interface
+require 'nmea.php';      // NMEA GPS data parser
+
 
 include 'comandos/parametros.php';
 include 'comandos/captura-en-vivo.php';
@@ -22,37 +27,14 @@ include 'comandos/captura-samples-offline.php';   // Dos mediciones en DustMate
 include 'comandos/handshake-refill-on.php';       // Handshake con refill ON
 include 'comandos/borrar-datos.php';
 
-// Wrappers para visualizar conversacion en consola
-function send($comport, $str, $waitForReply = 0.1)
-{
-        echo "--> $str";
-        $comport->sendMessage($str, $waitForReply);
-}
-
-
-function recv($comport, $count = 0)
-{
-        $result = $comport->readPort($count);
-        //echo "<-- $result \n";
-	readFrame($result);
-}
-
-
-// Muestra y envia mensaje, captura y muestra respuesta
-function poke($comport, $msg, $waitForReply = 0.1) 
-{
-	send($comport, "$msg\n", $waitForReply);
-	$comport->serialFlush();
-	recv($comport);
-}
-
 
 // Configuracion inicial
 $comport = new PhpSerial;
 $comport->deviceSet("/dev/ttyUSB0");         // Hardcodeado por ahora
 $comport->confBaudRate(9600);
 $comport->deviceOpen('w+');
-stream_set_timeout($comport->_dHandle, 10);   // Nada en 10 segundos? :(
+
+//stream_set_timeout($comport->_dHandle, 10);   // Nada en 10 segundos? :(
 
 
 // Introspeccion: ¿Que comandos conozco?
@@ -71,11 +53,67 @@ echo "--- Fin introspreccion --- \n\n";
 // Lanzar al DustMate los comandos uno por uno.
 // Pausa de 0.25 segundos a la espera de respuesta
 // para cada comando.
-//while (1) {
-foreach ($comandos['captura-en-vivo']['implementacion'] as $cmd)
-{
-	poke($comport, $cmd, 0.25);
-}
-//}
-?>
 
+
+////// GPS STUFF ///////
+
+/*$db = new PDO('mysql:host=localhost;dbname=gpsdb;charset=utf8','root','claveEye3##');
+
+$f = fopen( 'php://stdin', 'r' );
+echo "Service listening\n";
+
+while( $line = fgets( $f ) ) {
+  $data = nmea_parse ($line);
+
+  // GPRMC: hora,status,lat,ns,long,ew,speed,fecha
+  if ($data['type'] == 'GPRMC')   {
+        $query = 'INSERT INTO gpsdata '.
+                 '(type,utctime,status,latitude,ns,'.
+                 'longitude,ew,speed,date) VALUES ("GPRMC","'.
+                 $data['utc_time'] . '","' .
+                 $data['status'] . '","' .
+                 $data['latitude'] . '","' .
+                 $data['ns'] . '","' .
+                 $data['longitude'] . '","' .
+                 $data['ew'] . '","' .
+                 $data['speed'] . '","' .
+                 $data['date'] . '")';
+        echo $query."\n\n";
+        try {
+		//// DUSTMATE STUFF
+		foreach ($comandos['captura-en-vivo']['implementacion'] as $cmd) 
+		{
+			poke($comport, $cmd, 0.25);
+//                $db->query($query);
+		}
+		
+        }
+
+
+        catch (PDOException $ex) {
+                echo "Oh NOES! " . $ex->getMessage();
+        }
+  }
+
+  // GPGGA: quality,satelites,altitud
+  if ($data['type'] == 'GPGGA') {
+        $query = 'INSERT into gpsdata '.
+                 '(type,utctime,fix,satellites,altitude) VALUES ("GPGGA","'.
+                 $data['utc_time'] . '","' .
+                 $data['fix'] . '","' .
+                 $data['satellites'] . '","' .
+                 $data['altitude'] . '")';
+        echo $query."\n\n";
+        try {
+//                $db->query($query);
+        } 
+        catch (PDOExceptien $ex) {
+                echo "Oh NOES! " . $ex->getMessage();
+        }
+  }
+}
+
+fclose( $f );
+
+*/
+?>
