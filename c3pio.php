@@ -12,44 +12,19 @@ include 'lib/comm.php';           // send() / recv() / poke()
 require 'lib/database.php';       // Database interface
 require 'lib/nmea.php';           // NMEA GPS data parser
 
+include 'comandos/comandos.php';  // Load DustMate command knowledge
 
-//include 'comandos/parametros.php';
-include 'comandos/captura-en-vivo.php';
-//include 'comandos/obtener-datos-4.php';
-//include 'comandos/obtener-datos-3.php';
-//include 'comandos/fecha.php';
-//include 'comandos/iniciar-captura.php';
-//include 'comandos/detener-captura.php';
-//include 'comandos/captura-samples-offline-2.php';
-//include 'comandos/captura-samples-offline.php';
-//include 'comandos/handshake-refill-on.php';
-//include 'comandos/borrar-datos.php';
-//include 'comandos/introspection.php'; // Show known commands;
 
 // Configuracion inicial
 $comport = new PhpSerial;
-$comport->deviceSet("/dev/ttyUSB0");         // Hardcodeado por ahora
+$comport->deviceSet("/dev/ttyUSB0");        
 $comport->confBaudRate(9600);
 $comport->deviceOpen('w+');
+// Nota: la Pi rechaza este comando
 //stream_set_timeout($comport->_dHandle, 10);   // Nada en 10 segundos? :(
 
 
-// Introspeccion: ¿Que comandos conozco?
-echo "--- Introspeccion: comandos implementados  ---\n";
-echo "----------------------------------------------\n";
-foreach (array_keys($comandos) as $nombre_cmd)
-{
-	echo "[$nombre_cmd]: ". $comandos[$nombre_cmd]['descripcion']."\n";
-
-	// Volcado completo del comando
-	//foreach ($comandos[$nombre_cmd]['implementacion'] as $line)
-	//	echo $line."\n";
-}
-echo "--- Fin introspreccion --- \n\n";
-
-
-
-// Netcat stage: Listen for incoming connections
+// Etapa netcat
 
 
 
