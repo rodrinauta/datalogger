@@ -46,7 +46,6 @@ class PhpSerial
 
         if (substr($sysName, 0, 5) === "Linux") {
             $this->_os = "linux";
-
             if ($this->_exec("stty") === 0) {
                 register_shutdown_function(array($this, "deviceClose"));
             } else {
@@ -93,7 +92,6 @@ class PhpSerial
                 if ($this->_exec("stty -F " . $device) === 0) {
                     $this->_device = $device;
                     $this->_dState = SERIAL_DEVICE_SET;
-
                     return true;
                 }
             } elseif ($this->_os === "osx") {
@@ -161,14 +159,12 @@ class PhpSerial
         }
 
         $this->_dHandle = @fopen($this->_device, $mode);
-
         if ($this->_dHandle !== false) {
             stream_set_blocking($this->_dHandle, 0);
             $this->_dState = SERIAL_DEVICE_OPENED;
 
             return true;
         }
-
         $this->_dHandle = null;
         trigger_error("Unable to open the device", E_USER_WARNING);
 
