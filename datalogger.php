@@ -29,7 +29,7 @@ $comport->deviceOpen('w+');
 //stream_set_timeout($comport->_dHandle, 10);   // 10-sec timeout
 
 
-function buildNmeaQuery ($nmea)
+function buildNmeaQuery ($nmea , $gps_id = "" )
 {
 	// GPRMC: hora,status,lat,ns,long,ew,speed,fecha
 	if ($nmea['type'] == 'GPRMC')
@@ -38,28 +38,24 @@ function buildNmeaQuery ($nmea)
                 	'(utctime,status,latitude,ns,'.
 		 	'longitude,ew,speed,date) VALUES ("GPRMC","'.
 			$nmea['utc_time'] . '","' .
-			$nmea['status'] . '","' .
-			$nmea['latitude'] . '","' .
-			$nmea['ns'] . '","' .
-			$nmea['longitude'] . '","' .
-			$nmea['ew'] . '","' .
+			$nmea['status'] . '",' .
+			$nmea['latitude'] . ',' .
+			$nmea['longitude'] . ',"' .
 			$nmea['speed'] . '","' .
 			$nmea['date'] . '")
-			ON DUPLICATE KEY UPDATE date=VALUES(date),status=VALUES(status),latitude=VALUES(latitude),ns=VALUES(ns),
-		 	longitude=VALUES(longitude),ew=VALUES(ew),speed=VALUES(speed)
 			';
 	}
 	// GPGGA: quality,satelites,altitud
 	if ($nmea['type'] == 'GPGGA') {
-		$query = 'INSERT into gpsdata '.
-			'(utctime,fix,satellites,altitude) '.
-			'VALUES ("GPGGA","'.
-			$nmea['utc_time'] . '","' .
+		$query = 'UPDATE gpsdata  SET '.
+			'fix =  '.
 			$nmea['fix'] . '","' .
+			'satellites= '.
 			$nmea['satellites'] . '","' .
-			$nmea['altitude'] . '")
-			ON DUPLICATE KEY UPDATE fix=VALUES(fix) ,satellites= VALUES(satellites) ,altitude=VALUES(altitude)
-			';
+			'altitude= '.
+			$nmea['altitude'] . 
+			' where id='. 
+			$gps_id	;
 	}
 	return $query;
 }
@@ -68,22 +64,14 @@ function buildNmeaQuery ($nmea)
 
 // Using a race-condition safe method for SQL INSERT ID retrieval
 // http://stackoverflow.com/questions/897356/php-mysql-insert-row-then-get-id
-function buildMeasureQuery ($db, $gprmc, $gpgga, $dustMateInfo)
+function buildMeasureQuery ($db, $gps_id, $tramo_id, $dustMateInfo)
 {
-	// Insert GPRMC info, then collect ID
-	$gprmc_query = buildNmeaQuery ($gprmc);
-	$db->query ($gprmc_query);
-	$gprmc_id = $db->lastInsertId();
 
-	// Insert GPGGA info, then collect ID
-	$gpgga_query = buildNmeaQuery ($gpgga);
-	$db->query ($gpgga_query);
-	$gpgga_id = $db->lastInsertId();
 	
 	// GPGGA data in $nmea
 	$pmdata_query = "INSERT INTO pmdata ".
-		 "(gps,tsplat,pm10lat,pm25lat,pm1lat,".
-		 "tspavg,pm10avg,pm25avg,pm1avg) VALUES ('" .
+		 "(id_gps,tsplat,pm10lat,pm25lat,pm1lat,".
+		 "tspavg,pm10avg,pm25avg,pm1avg,id_tramo) VALUES ('" .
 		$gps_id . "','" .
 		$dustMateInfo['tsp_lat']  . "','" .
 		$dustMateInfo['pm10_lat'] . "','" .
@@ -92,7 +80,8 @@ function buildMeasureQuery ($db, $gprmc, $gpgga, $dustMateInfo)
 		$dustMateInfo['tsp_avg']  . "','" .
 		$dustMateInfo['pm10_avg'] . "','" .
 		$dustMateInfo['pm25_avg'] . "','" .
-		$dustMateInfo['pm1_avg']  . "');";
+		$dustMateInfo['pm1_avg']  . "','" .
+		$tramo_id  . "');";
 
 	$db->query ($pmdata_query);
 	return $pmdata_query;
@@ -106,16 +95,19 @@ while ($client = socket_accept ($sock))
 	while ($gpsdata = socket_read ($client, 256, PHP_NORMAL_READ))
 	{
 		$nmea = nmea_parse ($gpsdata);
-		if (!isValidNmea($nmea))
-		{
-			echo "Invalid " . $nmea['type'] . " data\n";
-		}
-		// Nmea packet is valid at this point. 
+
 		// Need to gather both GPRMC and GPGGA before
 		// asking DustMate.
 		if ($nmea['type'] == 'GPRMC') 
 		{
-			$gprmc = $nmea;
+			
+				// Insert GPRMC info, then collect ID
+				$gprmc_query = buildNmeaQuery ($nmea);
+				$db->query ($gprmc_query);
+				$gps_id = $db->lastInsertId();
+
+	
+	
 		}
 		// Expecting GPGGA *after* GPRMC.
 		// Now it's time to ask DustMate 
@@ -123,18 +115,24 @@ while ($client = socket_accept ($sock))
 		if ($nmea['type'] == 'GPGGA')
 		{
 			$gpgga = $nmea;
-			if (isValidNmea($gprmc) && isValidNmea($gpgga))
-			{
+				
+					// Insert GPGGA info, then collect ID
+					$gpgga_query = buildNmeaQuery ($nmea,$gps_id);
+					$db->query ($gpgga_query);
+					
+					$tramo_id = $db->query ("SELECT tramoid from graficarMapa 
+						WHERE  CONTAINS(zona,
+						GeomFromText('POINT(".$nmea['longitude']." ".$nmea['latitude'].")'))
+						");
+					
+				
 				$dustMateInfo = askDustMate($comport);
-				if ($dustMateInfo != 'INVALID') 
-				{
-					$query = buildMeasureQuery (
+
+				$query = buildMeasureQuery (
 						$db,
-						$gprmc,
-						$gpgga,
+						$gps_id,
+						$tramo_id,
 						$dustMateInfo);
-				}
-			}
 		}
 	}
 }

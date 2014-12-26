@@ -11,7 +11,7 @@ function isValidNmea ($data)
 	{
 		return False;          // Invalid GPRMC
 	}
-	if ($data['type'] == 'GPGGA' && $data['latitude'] == '')
+	if ($data['type'] == 'GPGGA' && $data['fix'] == '0')
 	{
 		return False;          // Invalid GPGGA
 	}
@@ -24,10 +24,15 @@ function parse_gprmc ($parts)
     $data['type']      = 'GPRMC';
 	$data['utc_time']  = $parts[1];
 	$data['status']    = $parts[2];
-	$data['latitude']  = $parts[3];
-	$data['ns']        = $parts[4];
-	$data['longitude'] = $parts[5];
-	$data['ew']        = $parts[6];
+	
+	$latitude = substr($parts[3],0,2);
+	$decimal_latitud = substr($parts[3], 2);
+	$data['latitude']  = (($parts[4]=='S')?-1:1) * $latitud+($decimal_latitud/60)) ;
+	
+	$longitude = substr($parts[5],0,3);
+	$decimal_longitude = substr($parts[5], 3);
+	$data['longitude'] = (($parts[6]=='W')?-1:1) * $longitude+($decimal_longitude/60)) ;
+
 	$data['speed']     = $parts[7];
 	$data['course']    = $parts[8];
 	$data['date']      = $parts[9];
@@ -42,10 +47,15 @@ function parse_gpgga($parts)
 {
 	$data['type']             = 'GPGGA';
 	$data['utc_time']         = $parts[1];
-	$data['latitude']         = $parts[2];
-	$data['ns']               = $parts[3];
-	$data['longitude']        = $parts[4];
-	$data['ew']               = $parts[5];
+	
+	$latitude = substr($parts[2],0,2);
+	$decimal_latitud = substr($parts[2], 2);
+	$data['latitude']  = (($parts[3]=='S')?-1:1) * $latitud+($decimal_latitud/60)) ;
+	
+	$longitude = substr($parts[4],0,3);
+	$decimal_longitude = substr($parts[4], 3);
+	$data['longitude'] = (($parts[5]=='W')?-1:1) * $longitude+($decimal_longitude/60)) ;
+
 	$data['fix']              = $parts[6];
 	$data['satellites']       = $parts[7];
 	$data['hdop']             = $parts[8];
