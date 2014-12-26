@@ -1,7 +1,6 @@
 <?php
 
 /*
-
 -- Setting up the database (mysql expected)
 CREATE DATABASE gpsdb;
 USE gpsdb;
@@ -22,11 +21,26 @@ fix CHAR,
 satellites VARCHAR(2),
 altitude VARCHAR(10));
 
+--CREATE TABLE pmdata(
+--id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
+--value VARCHAR(255) NOT NULL,
+--utctime VARCHAR(10),
+--date VARCHAR(6));
+
 CREATE TABLE pmdata(
-id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
-value VARCHAR(255) NOT NULL,
-utctime VARCHAR(10),
-date VARCHAR(6));
+gprmc INTEGER NOT NULL,
+gpgga INTEGER NOT NULL,
+tsplat FLOAT,
+pm10lat FLOAT,
+pm25lat FLOAT,
+pm1lat FLOAT,
+tspavg FLOAT,
+pm10avg FLOAT,
+pm25avg FLOAT,
+pm1avg FLOAT,
+FOREIGN KEY (gprmc) REFERENCES gpsdata(id),
+FOREIGN KEY (gpgga) REFERENCES gpsdata(id)
+);
 
 */
 try {
@@ -52,10 +66,19 @@ satellites VARCHAR(2),
 altitude VARCHAR(10));
 
 CREATE TABLE pmdata(
-id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
-value VARCHAR(255) NOT NULL,
-utctime VARCHAR(10),
-date VARCHAR(6));
+gprmc INTEGER NOT NULL,
+gpgga INTEGER NOT NULL,
+tsplat FLOAT,
+pm10lat FLOAT,
+pm25lat FLOAT,
+pm1lat FLOAT,
+tspavg FLOAT,
+pm10avg FLOAT,
+pm25avg FLOAT,
+pm1avg FLOAT,
+FOREIGN KEY (gprmc) REFERENCES gpsdata(id),
+FOREIGN KEY (gpgga) REFERENCES gpsdata(id)
+);
 ');
 
 } catch (PDOException $ex) {
