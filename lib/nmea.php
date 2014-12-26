@@ -21,7 +21,7 @@ function isValidNmea ($data)
 
 function parse_gprmc ($parts) 
 {
-        $data['type']      = 'GPRMC';
+    $data['type']      = 'GPRMC';
 	$data['utc_time']  = $parts[1];
 	$data['status']    = $parts[2];
 	$data['latitude']  = $parts[3];
@@ -33,7 +33,7 @@ function parse_gprmc ($parts)
 	$data['date']      = $parts[9];
 	$data['magnetic_variation'] = $parts[10];
 	$data['mode']               = $parts[11];
-        $data['checksum']           = $parts[12];
+    $data['checksum']           = $parts[12];
 	return $data;
 }
 

@@ -30,13 +30,16 @@ function poke($comport, $msg, $waitForReply = 0.1)
 }
 
 
-function askDustMate($comport, $waitForReply = 0.25)
+function askDustMate($comport, $command = 'captura-en-vivo', $waitForReply = 0.25)
 {
 /*
 	// Raspberry Pi
-	send($comport, "!D19420017814.", $waitForReply);
-	$comport->serialFlush();
-	$dustInfo = $comport->readPort(0);
+	foreach ( $comandos[$command]['implementacion'] as $instruccion )
+	{
+		send($comport, $instruccion , $waitForReply);
+		$comport->serialFlush();
+		$dustInfo[] = $comport->readPort(0);
+	}
 */
 
 	// Simulator

@@ -35,7 +35,7 @@ function buildNmeaQuery ($nmea)
 	if ($nmea['type'] == 'GPRMC')
 	{
 		$query = 'INSERT INTO gpsdata '.
-                	'(type,utctime,status,latitude,ns,'.
+                	'(utctime,status,latitude,ns,'.
 		 	'longitude,ew,speed,date) VALUES ("GPRMC","'.
 			$nmea['utc_time'] . '","' .
 			$nmea['status'] . '","' .
@@ -44,17 +44,22 @@ function buildNmeaQuery ($nmea)
 			$nmea['longitude'] . '","' .
 			$nmea['ew'] . '","' .
 			$nmea['speed'] . '","' .
-			$nmea['date'] . '")';
+			$nmea['date'] . '")
+			ON DUPLICATE KEY UPDATE date=VALUES(date),status=VALUES(status),latitude=VALUES(latitude),ns=VALUES(ns),
+		 	longitude=VALUES(longitude),ew=VALUES(ew),speed=VALUES(speed)
+			';
 	}
 	// GPGGA: quality,satelites,altitud
 	if ($nmea['type'] == 'GPGGA') {
 		$query = 'INSERT into gpsdata '.
-			'(type,utctime,fix,satellites,altitude) '.
+			'(utctime,fix,satellites,altitude) '.
 			'VALUES ("GPGGA","'.
 			$nmea['utc_time'] . '","' .
 			$nmea['fix'] . '","' .
 			$nmea['satellites'] . '","' .
-			$nmea['altitude'] . '")';
+			$nmea['altitude'] . '")
+			ON DUPLICATE KEY UPDATE fix=VALUES(fix) ,satellites= VALUES(satellites) ,altitude=VALUES(altitude)
+			';
 	}
 	return $query;
 }
@@ -77,10 +82,9 @@ function buildMeasureQuery ($db, $gprmc, $gpgga, $dustMateInfo)
 	
 	// GPGGA data in $nmea
 	$pmdata_query = "INSERT INTO pmdata ".
-		 "(gprmc,gpgga,tsplat,pm10lat,pm25lat,pm1lat,".
+		 "(gps,tsplat,pm10lat,pm25lat,pm1lat,".
 		 "tspavg,pm10avg,pm25avg,pm1avg) VALUES ('" .
-		$gprmc_id . "','" .
-		$gpgga_id . "','" .
+		$gps_id . "','" .
 		$dustMateInfo['tsp_lat']  . "','" .
 		$dustMateInfo['pm10_lat'] . "','" .
 		$dustMateInfo['pm25_lat'] . "','" .

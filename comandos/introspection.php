@@ -4,7 +4,7 @@
  * comandos/introspection.php
  */
 
-// Introspeccion: Â¿Que comandos conozco?
+// Introspeccion: ¿Que comandos conozco?
 echo "--- Introspeccion: comandos implementados  ---\n";
 echo "----------------------------------------------\n";
 foreach (array_keys($comandos) as $nombre_cmd)
@@ -18,4 +18,3 @@ foreach (array_keys($comandos) as $nombre_cmd)
 echo "--- Fin introspreccion --- \n\n";
 
 ?>
-
