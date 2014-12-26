@@ -45,8 +45,9 @@ FOREIGN KEY (gpgga) REFERENCES gpsdata(id)
 */
 try {
     // Raspberry Pi
-    // $db = new PDO('mysql:host=localhost;dbname=gpsdb;charset=utf8','root','claveEye3##');
-    $db = new PDO('mysql:host=localhost;dbname=gpsdb;charset=utf8','root','nomires');
+    $db = new PDO('mysql:host=localhost;dbname=gpsdb;charset=utf8','root','claveEye3##');
+    // Dev box
+    //$db = new PDO('mysql:host=localhost;dbname=gpsdb;charset=utf8','root','nomires');
 
 
     $db->query('

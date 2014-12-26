@@ -6,7 +6,7 @@
  */
 
 // Relevant parameters
-$listenAddress = "127.0.0.1";     // eye3pio.eye3.cl: 192.168.1.124
+$listenAddress = "192.168.1.124";     // eye3pio.eye3.cl: 192.168.1.124
 $listenPort    = "5001";
 $serialDevice  = "/dev/ttyUSB0";
 
