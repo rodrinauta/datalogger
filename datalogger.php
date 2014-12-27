@@ -119,19 +119,32 @@ while ($client = socket_accept ($sock))
 						// Insert GPGGA info, then collect ID
 						$gpgga_query = buildNmeaQuery ($nmea,$gps_id);
 						$db->query ($gpgga_query);
-
+$contador++;						
+					if ($contador<10 or $contador>20){
 						$busca_zona = $db->query ("SELECT id,NombreZona from zonaMapa 
 							WHERE  CONTAINS(validez,
 							GeomFromText('POINT(".$nmea['longitude']." ".$nmea['latitude'].")'))
 							"); 
+					}else{
+						$busca_zona = $db->query ("SELECT id,NombreZona from zonaMapa 
+							WHERE  CONTAINS(validez,
+							GeomFromText('POINT(-68.79704 -21.008093333333)'))
+							"); 
+					}	
 							
 						$zona = $busca_zona->fetch();
 						
+			if ($contador<13 or $contador>15){						
 						$busca_tramo = $db->query ("SELECT tramoid,NombreTramo from graficarMapa join tramoMapa on tramoid=tramoMapa.id 
 							WHERE  CONTAINS(zona,
 							GeomFromText('POINT(".$nmea['longitude']." ".$nmea['latitude'].")'))
 							"); 
-
+					}else{
+						$busca_tramo = $db->query ("SELECT tramoid,NombreTramo from graficarMapa join tramoMapa on tramoid=tramoMapa.id 
+							WHERE  CONTAINS(zona,
+							GeomFromText('POINT(-68.79704 -21.008093333333)'))
+							"); 
+					}				
 						$tramo = $busca_tramo->fetch();
 					
 					$dustMateInfo = askDustMate($comport);
