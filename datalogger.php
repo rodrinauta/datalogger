@@ -9,7 +9,9 @@
 $listenAddress = "192.168.0.35";     // eye3pio.eye3.cl: 192.168.1.124
 $listenPort    = "5001";
 $serialDevice  = "/dev/ttyUSB0";
+error_reporting(E_WARNING );
 
+$out="";   //Temporal var to get name of measure zone
 
 include 'lib/PhpSerial.php';      // External dependency
 include 'lib/decoder.php';        // DustMate frame decoder
@@ -117,28 +119,41 @@ while ($client = socket_accept ($sock))
 						// Insert GPGGA info, then collect ID
 						$gpgga_query = buildNmeaQuery ($nmea,$gps_id);
 						$db->query ($gpgga_query);
+
+						$busca_zona = $db->query ("SELECT id,NombreZona from zonaMapa 
+							WHERE  CONTAINS(validez,
+							GeomFromText('POINT(".$nmea['longitude']." ".$nmea['latitude'].")'))
+							"); 
+							
+						$zona = $busca_zona->fetch();
 						
-						$busca_tramo = $db->query ("SELECT tramoid from graficarMapa 
+						$busca_tramo = $db->query ("SELECT tramoid,NombreTramo from graficarMapa join tramoMapa on tramoid=tramoMapa.id 
 							WHERE  CONTAINS(zona,
 							GeomFromText('POINT(".$nmea['longitude']." ".$nmea['latitude'].")'))
 							"); 
-								
-							$tramo_id = $busca_tramo->fetch(PDO::FETCH_COLUMN, 0);
+
+						$tramo = $busca_tramo->fetch();
 					
 					$dustMateInfo = askDustMate($comport);
 
 					$query = buildMeasureQuery (
 							$db,
 							$gps_id,
-							($tramo_id==''?'NULL':$tramo_id),
+							(!is_array($tramo)?'NULL':$tramo['tramoid']),
 							$dustMateInfo);
 							
-					echo 'Medición en tramo '.($tramo_id==''?'No válido':$tramo_id).' con valores'.
-						($dustMateInfo['tsp_lat']==''?'':' PMTotal=' .$dustMateInfo['tsp_lat']).
-						($dustMateInfo['pm10_lat']==''?'':' PM10=' .$dustMateInfo['pm10_lat']).
-						($dustMateInfo['pm25_lat']==''?'':' PM2,5=' .$dustMateInfo['pm25_lat']).
-						($dustMateInfo['pm1_lat']==''?'':' PM1=' .$dustMateInfo['pm1_lat']).
-						PHP_EOL;
+					if (is_array($zona))	
+					{
+						echo 'Medición '.$zona["NombreZona"].' en '.(!is_array($tramo)?'Tramo No válido':$tramo['NombreTramo']).' con valores'.
+							($dustMateInfo['tsp_lat']==''?'':' PMTotal=' .$dustMateInfo['tsp_lat']).
+							($dustMateInfo['pm10_lat']==''?'':' PM10=' .$dustMateInfo['pm10_lat']).
+							($dustMateInfo['pm25_lat']==''?'':' PM2,5=' .$dustMateInfo['pm25_lat']).
+							($dustMateInfo['pm1_lat']==''?'':' PM1=' .$dustMateInfo['pm1_lat']).
+							PHP_EOL;
+						$out=$zona["NombreZona"];
+					}
+					elseif($out!='') echo "Se salió de la ".$out.PHP_EOL;
+					else echo "Aún no se ingresa a una zona válida".PHP_EOL;
 			}
 		}
 	}
