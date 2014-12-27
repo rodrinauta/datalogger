@@ -27,11 +27,11 @@ function parse_gprmc ($parts)
 	
 	$latitude = substr($parts[3],0,2);
 	$decimal_latitud = substr($parts[3], 2);
-	$data['latitude']  = (($parts[4]=='S')?-1:1) * $latitud+($decimal_latitud/60)) ;
+	$data['latitude']  = (($parts[4]=='S')?-1:1) * ($latitude+($decimal_latitud/60)) ;
 	
 	$longitude = substr($parts[5],0,3);
 	$decimal_longitude = substr($parts[5], 3);
-	$data['longitude'] = (($parts[6]=='W')?-1:1) * $longitude+($decimal_longitude/60)) ;
+	$data['longitude'] = (($parts[6]=='W')?-1:1) * ($longitude+($decimal_longitude/60)) ;
 
 	$data['speed']     = $parts[7];
 	$data['course']    = $parts[8];
@@ -50,11 +50,11 @@ function parse_gpgga($parts)
 	
 	$latitude = substr($parts[2],0,2);
 	$decimal_latitud = substr($parts[2], 2);
-	$data['latitude']  = (($parts[3]=='S')?-1:1) * $latitud+($decimal_latitud/60)) ;
+	$data['latitude']  = (($parts[3]=='S')?-1:1) * ($latitude+($decimal_latitud/60)) ;
 	
 	$longitude = substr($parts[4],0,3);
 	$decimal_longitude = substr($parts[4], 3);
-	$data['longitude'] = (($parts[5]=='W')?-1:1) * $longitude+($decimal_longitude/60)) ;
+	$data['longitude'] = (($parts[5]=='W')?-1:1) * ($longitude+($decimal_longitude/60)) ;
 
 	$data['fix']              = $parts[6];
 	$data['satellites']       = $parts[7];

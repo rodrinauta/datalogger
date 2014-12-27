@@ -81,6 +81,12 @@ try {
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
+DROP TABLE graficarMapa;
+DROP TABLE sightdata;
+DROP TABLE pmdata;
+DROP TABLE gpsdata;
+DROP TABLE tramoMapa;
+DROP TABLE zonaMapa;
 	
 CREATE TABLE IF NOT EXISTS gpsdata(
 	id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
@@ -107,7 +113,7 @@ CREATE TABLE IF NOT EXISTS sightdata(
 
 CREATE TABLE IF NOT EXISTS zonaMapa (
 	id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	NombreZona varchar(60) NOT NULL,
+	NombreZona varchar(60) UNIQUE KEY NOT NULL,
 	validez polygon NOT NULL
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT="gran zona general, a partir de donde se inician las capturas" ;
 
@@ -115,14 +121,14 @@ CREATE TABLE IF NOT EXISTS zonaMapa (
 CREATE TABLE IF NOT EXISTS tramoMapa (
 	id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
 	zonaid INTEGER NOT NULL,
-	NombreTramo varchar(60) NOT NULL,
+	NombreTramo varchar(60) UNIQUE KEY NOT NULL,
 	FOREIGN KEY zonaid (zonaid) REFERENCES zonaMapa (id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT="tabla de relacion entre tramo y zona";
 
 
 CREATE TABLE IF NOT EXISTS graficarMapa (
 	id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	tramoid INTEGER NOT NULL,
+	tramoid INTEGER UNIQUE KEY NOT NULL,
 	tramo linestring NOT NULL COMMENT "tramo a desplegar en el mapa",
 	zona polygon NOT NULL COMMENT "zona espacial que se considera valido para ser incluido en el tramo",
 	FOREIGN KEY tramoid (tramoid) REFERENCES tramoMapa (id) ON DELETE CASCADE ON UPDATE CASCADE

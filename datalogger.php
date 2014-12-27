@@ -6,7 +6,7 @@
  */
 
 // Relevant parameters
-$listenAddress = "192.168.1.124";     // eye3pio.eye3.cl: 192.168.1.124
+$listenAddress = "192.168.0.35";     // eye3pio.eye3.cl: 192.168.1.124
 $listenPort    = "5001";
 $serialDevice  = "/dev/ttyUSB0";
 
@@ -35,8 +35,8 @@ function buildNmeaQuery ($nmea , $gps_id = "" )
 	if ($nmea['type'] == 'GPRMC')
 	{
 		$query = 'INSERT INTO gpsdata '.
-                	'(utctime,status,latitude,ns,'.
-		 	'longitude,ew,speed,date) VALUES ("GPRMC","'.
+                	'(utctime,status,latitude,'.
+		 	'longitude,speed,date) VALUES ("'.
 			$nmea['utc_time'] . '","' .
 			$nmea['status'] . '",' .
 			$nmea['latitude'] . ',' .
@@ -49,9 +49,9 @@ function buildNmeaQuery ($nmea , $gps_id = "" )
 	if ($nmea['type'] == 'GPGGA') {
 		$query = 'UPDATE gpsdata  SET '.
 			'fix =  '.
-			$nmea['fix'] . '","' .
+			$nmea['fix'] . ',' .
 			'satellites= '.
-			$nmea['satellites'] . '","' .
+			$nmea['satellites'] . ',' .
 			'altitude= '.
 			$nmea['altitude'] . 
 			' where id='. 
@@ -71,8 +71,8 @@ function buildMeasureQuery ($db, $gps_id, $tramo_id, $dustMateInfo)
 	// GPGGA data in $nmea
 	$pmdata_query = "INSERT INTO pmdata ".
 		 "(id_gps,tsplat,pm10lat,pm25lat,pm1lat,".
-		 "tspavg,pm10avg,pm25avg,pm1avg,id_tramo) VALUES ('" .
-		$gps_id . "','" .
+		 "tspavg,pm10avg,pm25avg,pm1avg,id_tramo) VALUES (" .
+		$gps_id . ",'" .
 		$dustMateInfo['tsp_lat']  . "','" .
 		$dustMateInfo['pm10_lat'] . "','" .
 		$dustMateInfo['pm25_lat'] . "','" .
@@ -80,8 +80,8 @@ function buildMeasureQuery ($db, $gps_id, $tramo_id, $dustMateInfo)
 		$dustMateInfo['tsp_avg']  . "','" .
 		$dustMateInfo['pm10_avg'] . "','" .
 		$dustMateInfo['pm25_avg'] . "','" .
-		$dustMateInfo['pm1_avg']  . "','" .
-		$tramo_id  . "');";
+		$dustMateInfo['pm1_avg']  . "'," .
+		$tramo_id  . ");";
 
 	$db->query ($pmdata_query);
 	return $pmdata_query;
@@ -107,7 +107,6 @@ while ($client = socket_accept ($sock))
 				$gps_id = $db->lastInsertId();
 
 	
-	
 		}
 		// Expecting GPGGA *after* GPRMC.
 		// Now it's time to ask DustMate 
@@ -120,18 +119,20 @@ while ($client = socket_accept ($sock))
 					$gpgga_query = buildNmeaQuery ($nmea,$gps_id);
 					$db->query ($gpgga_query);
 					
-					$tramo_id = $db->query ("SELECT tramoid from graficarMapa 
+					$busca_tramo = $db->query ("SELECT tramoid from graficarMapa 
 						WHERE  CONTAINS(zona,
-						GeomFromText('POINT(".$nmea['longitude']." ".$nmea['latitude'].")'))
-						");
-					
+						GeomFromText('POINT(-68.79704  -21.008093333333)'))
+						"); 
+							
+						$tramo_id = $busca_tramo->fetch(PDO::FETCH_COLUMN, 0);
+						// GeomFromText('POINT(".$nmea['longitude']." ".$nmea['latitude'].")'))
 				
 				$dustMateInfo = askDustMate($comport);
 
 				$query = buildMeasureQuery (
 						$db,
 						$gps_id,
-						$tramo_id,
+						($tramo_id==''?'NULL':$tramo_id),
 						$dustMateInfo);
 		}
 	}
