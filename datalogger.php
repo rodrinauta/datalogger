@@ -121,11 +121,10 @@ while ($client = socket_accept ($sock))
 					
 					$busca_tramo = $db->query ("SELECT tramoid from graficarMapa 
 						WHERE  CONTAINS(zona,
-						GeomFromText('POINT(-68.79704  -21.008093333333)'))
+						GeomFromText('POINT(".$nmea['longitude']." ".$nmea['latitude'].")'))
 						"); 
 							
 						$tramo_id = $busca_tramo->fetch(PDO::FETCH_COLUMN, 0);
-						// GeomFromText('POINT(".$nmea['longitude']." ".$nmea['latitude'].")'))
 				
 				$dustMateInfo = askDustMate($comport);
 
