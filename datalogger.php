@@ -95,44 +95,49 @@ while ($client = socket_accept ($sock))
 	while ($gpsdata = socket_read ($client, 256, PHP_NORMAL_READ))
 	{
 		$nmea = nmea_parse ($gpsdata);
-
-		// Need to gather both GPRMC and GPGGA before
-		// asking DustMate.
-		if ($nmea['type'] == 'GPRMC') 
+		if($nmea != 'FAIL')
 		{
-			
-				// Insert GPRMC info, then collect ID
-				$gprmc_query = buildNmeaQuery ($nmea);
-				$db->query ($gprmc_query);
-				$gps_id = $db->lastInsertId();
-
-	
-		}
-		// Expecting GPGGA *after* GPRMC.
-		// Now it's time to ask DustMate 
-                // and try building a full measure query.
-		if ($nmea['type'] == 'GPGGA')
-		{
-			$gpgga = $nmea;
+			// Need to gather both GPRMC and GPGGA before
+			// asking DustMate.
+			if ($nmea['type'] == 'GPRMC') 
+			{
 				
-					// Insert GPGGA info, then collect ID
-					$gpgga_query = buildNmeaQuery ($nmea,$gps_id);
-					$db->query ($gpgga_query);
+					// Insert GPRMC info, then collect ID
+					$gprmc_query = buildNmeaQuery ($nmea);
+					$db->query ($gprmc_query);
+					$gps_id = $db->lastInsertId();
+
+		
+			}
+			// Expecting GPGGA *after* GPRMC.
+			// Now it's time to ask DustMate 
+					// and try building a full measure query.
+			if ($nmea['type'] == 'GPGGA')
+			{
+						// Insert GPGGA info, then collect ID
+						$gpgga_query = buildNmeaQuery ($nmea,$gps_id);
+						$db->query ($gpgga_query);
+						
+						$busca_tramo = $db->query ("SELECT tramoid from graficarMapa 
+							WHERE  CONTAINS(zona,
+							GeomFromText('POINT(".$nmea['longitude']." ".$nmea['latitude'].")'))
+							"); 
+								
+							$tramo_id = $busca_tramo->fetch(PDO::FETCH_COLUMN, 0);
 					
-					$busca_tramo = $db->query ("SELECT tramoid from graficarMapa 
-						WHERE  CONTAINS(zona,
-						GeomFromText('POINT(".$nmea['longitude']." ".$nmea['latitude'].")'))
-						"); 
-							
-						$tramo_id = $busca_tramo->fetch(PDO::FETCH_COLUMN, 0);
-				
-				$dustMateInfo = askDustMate($comport);
+					$dustMateInfo = askDustMate($comport);
 
-				$query = buildMeasureQuery (
-						$db,
-						$gps_id,
-						($tramo_id==''?'NULL':$tramo_id),
-						$dustMateInfo);
+					$query = buildMeasureQuery (
+							$db,
+							$gps_id,
+							($tramo_id==''?'NULL':$tramo_id),
+							$dustMateInfo);
+							
+					echo 'Medición en tramo '.($tramo_id==''?'No válido':$tramo_id).' con valores PMTotal=' .$dustMateInfo['tsp_lat']  . ' PM10=' .
+						$dustMateInfo['pm10_lat'] . ' PM2.5=' .
+						$dustMateInfo['pm25_lat'] . ' PM1=' .
+						$dustMateInfo['pm1_lat'].PHP_EOL;
+			}
 		}
 	}
 }
