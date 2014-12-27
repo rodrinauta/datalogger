@@ -133,10 +133,12 @@ while ($client = socket_accept ($sock))
 							($tramo_id==''?'NULL':$tramo_id),
 							$dustMateInfo);
 							
-					echo 'Medición en tramo '.($tramo_id==''?'No válido':$tramo_id).' con valores PMTotal=' .$dustMateInfo['tsp_lat']  . ' PM10=' .
-						$dustMateInfo['pm10_lat'] . ' PM2.5=' .
-						$dustMateInfo['pm25_lat'] . ' PM1=' .
-						$dustMateInfo['pm1_lat'].PHP_EOL;
+					echo 'Medición en tramo '.($tramo_id==''?'No válido':$tramo_id).' con valores'.
+						($dustMateInfo['tsp_lat']==''?'':' PMTotal=' .$dustMateInfo['tsp_lat']).
+						($dustMateInfo['pm10_lat']==''?'':' PM10=' .$dustMateInfo['pm10_lat']).
+						($dustMateInfo['pm25_lat']==''?'':' PM2,5=' .$dustMateInfo['pm25_lat']).
+						($dustMateInfo['pm1_lat']==''?'':' PM1=' .$dustMateInfo['pm1_lat']).
+						PHP_EOL;
 			}
 		}
 	}
