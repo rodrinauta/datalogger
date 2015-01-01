@@ -121,14 +121,14 @@ while ($client = socket_accept ($sock))
 						$db->query ($gpgga_query);
 
 						$busca_zona = $db->query ("SELECT id,NombreZona from zonaMapa 
-							WHERE  CONTAINS(validez,
+							WHERE  ST_CONTAINS(validez,
 							GeomFromText('POINT(".$nmea['longitude']." ".$nmea['latitude'].")'))
 							"); 
 							
 						$zona = $busca_zona->fetch();
 						
 						$busca_tramo = $db->query ("SELECT tramoid,NombreTramo from graficarMapa join tramoMapa on tramoid=tramoMapa.id 
-							WHERE  CONTAINS(zona,
+							WHERE  ST_CONTAINS(zona,
 							GeomFromText('POINT(".$nmea['longitude']." ".$nmea['latitude'].")'))
 							"); 
 
