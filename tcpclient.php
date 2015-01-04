@@ -26,8 +26,8 @@ function reportToAndroid ($androidSocket, $nmea, $dustMateInfo)
 {
 	$dataString = 	$nmea['date'] . "|" .
 					$nmea['utc_time'] . "|" .
-					$nmea['latitude'] . "|" .
-					$nmea['longitude'] . "|" .
+					round($nmea['latitude'], 6) . "|" .
+					round($nmea['longitude'], 6) . "|" .
 					round($dustMateInfo['tsp_avg'], 1) . "|" .
 					round($dustMateInfo['pm10_avg'], 1) . "|" .
 					round($dustMateInfo['pm25_avg'], 1) . "|" .
