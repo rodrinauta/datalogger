@@ -28,11 +28,11 @@ function reportToAndroid ($androidSocket, $nmea, $dustMateInfo)
 					$nmea['utc_time'] . "|" .
 					$nmea['latitude'] . "|" .
 					$nmea['longitude'] . "|" .
-					$dustMateInfo['tsp_avg'] . "|" .
-					$dustMateInfo['pm10_avg'] . "|" .
-					$dustMateInfo['pm25_avg'] . "|" .
-					$dustMateInfo['pm1_avg'] . "|" .
-					$nmea['speed'] . "\n";	
+					round($dustMateInfo['tsp_avg'], 1) . "|" .
+					round($dustMateInfo['pm10_avg'], 1) . "|" .
+					round($dustMateInfo['pm25_avg'], 1) . "|" .
+					round($dustMateInfo['pm1_avg'], 1) . "|" .
+					round($nmea['speed'], 1) . "\n";	
 	socket_send($androidSocket, $dataString, strlen($dataString), 0);				
 	echo "--> ". $dataString;
 }
